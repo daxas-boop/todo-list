@@ -13,6 +13,14 @@
     cursor: pointer;
 }
 
-.project{
+.project {
     display:flex;
+}
+
+#form-container {
+    display: none;
+}
+
+.form-show {
+    display: block !important;
 }
