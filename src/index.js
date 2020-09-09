@@ -1,6 +1,5 @@
 import { renderProjects } from "./DOMstuff";
-
-export {projects};
+export {projects, addsTodo};
 
 let projects = [];
 
@@ -18,8 +17,8 @@ class Project {
         }
     }
 
-    createTodo(value) {
-        let todo = new Todo(value);
+    createTodo(title, description) {
+        let todo = new Todo(title, description);
         this.todosArray.push(todo);
     }
 
@@ -31,9 +30,17 @@ class Project {
 
 class Todo {
     constructor(title, description, dueDate, priority){
-        this.title = title;
+        if (typeof(title) != "undefined" && title.length >= 4 ){
+            this.title = title;
+        } else{
+            alert ('Title too short');
+            throw 'Title too short';
+        }
+
         this.description = description;
+
         this.dueDate = dueDate;
+
         this.priority = priority;
     }
 
@@ -59,8 +66,9 @@ class Todo {
 }
 
 function makeDefaultProject() {
-    let project = new Project('Default project');
-    projects.push(project);
+    let defaultProject = new Project('Default project');
+    projects.push(defaultProject);
+    defaultProject.createTodo('Default todo', 'This is a default to do');
 }
 
 function handleButtons() {
@@ -72,6 +80,13 @@ function addProject() {
     let project = new Project(prompt('Name of the project', 'Default name'));
     projects.push(project);
     renderProjects();
+}
+
+function addsTodo(project) {
+    let title = document.querySelector('#title-todo').value;
+    let description = document.querySelector('#description-todo').value;
+
+    project.createTodo(title, description);
 }
 
 function initialize() {
