@@ -24,3 +24,15 @@
 .form-show {
     display: block !important;
 }
+
+.low-priority {
+    background-color: rgb(78, 255, 47);
+}
+
+.medium-priority {
+    background-color: orange;
+}
+
+.high-priority {
+    background-color: red;
+}
