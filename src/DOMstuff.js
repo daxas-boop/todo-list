@@ -11,31 +11,37 @@ export function renderProjects() {
         $projectTitle.innerText = project.title;
         let $todoListContainer = document.createElement('div');
         $todoListContainer.classList.add('todo-list-container');
-        let $changeProjectName = document.createElement('button');
-        $changeProjectName.setAttribute('class','change-project-name');
-        $changeProjectName.innerText = 'Change project name';
-        $changeProjectName.addEventListener('click', () => { project.changeTitle(prompt('new title of project')), renderProjects(); });
-        let $deleteProject = document.createElement('button');
-        $deleteProject.setAttribute('class','delete-project');
-        $deleteProject.innerText = 'Delete project';
-        $deleteProject.addEventListener('click', () => { projects.deleteProject(project), renderProjects(); });
-        let $addTodo = document.createElement('button');
-        $addTodo.innerText = 'Add new todo';
-        $addTodo.addEventListener('click', () => { renderForm(project), showTodoForm() });
 
-        $project.appendChild($deleteProject);
+        let $changeProjectNameBtn = document.createElement('button');
+        $changeProjectNameBtn.setAttribute('class','change-project-name');
+        $changeProjectNameBtn.classList.add('button');
+        $changeProjectNameBtn.innerText = 'Change project name';
+        $changeProjectNameBtn.addEventListener('click', () => { changeProjectName(project) });
+        let $deleteProjectBtn = document.createElement('button');
+        $deleteProjectBtn.setAttribute('class','delete-project');
+        $deleteProjectBtn.innerText = 'Delete project';
+        $deleteProjectBtn.classList.add('button');
+        $deleteProjectBtn.addEventListener('click', () => { deleteProject(project) });
+        let $addTodoBtn = document.createElement('button');
+        $addTodoBtn.innerText = 'Add new todo';
+        $addTodoBtn.classList.add('button');
+        $addTodoBtn.addEventListener('click', () => { renderForm(project) });
+
+
+        $project.appendChild($deleteProjectBtn);
         $project.appendChild($todoListContainer);
-        $project.appendChild($addTodo);
-        $project.appendChild($changeProjectName);
+        $project.appendChild($addTodoBtn);
+        $project.appendChild($changeProjectNameBtn);
         $project.appendChild($projectTitle);
         $projectContainer.appendChild($project);
 
-        renderTodoList(project.todosArray, $project, project, $todoListContainer);
+        renderTodoList(project.todosArray, $project, project);
     });
     console.log('Projects rendered');
 }
 
-function renderTodoList(todosArray, $project, project, $todoListContainer) {
+function renderTodoList(todosArray, $project, project) {
+    let $todoListContainer = $project.querySelector('.todo-list-container')
     $todoListContainer.innerHTML = '';
 
     todosArray.forEach( todo => {
@@ -50,17 +56,20 @@ function renderTodoList(todosArray, $project, project, $todoListContainer) {
         $todoDate.innerText = todo.dueDate;
         let $todoPriority = document.createElement('p');
         $todoPriority.innerText = `${todo.priority}`
-        let $todoDelete = document.createElement('button');
-        $todoDelete.innerText = 'Delete todo';
-        $todoDelete.addEventListener('click', () => { 
-            project.deleteTodo(todosArray.indexOf(todo));
-            
-        });
+        let $todoDeleteBtn = document.createElement('button');
+        $todoDeleteBtn.innerText = 'Delete todo';
+        $todoDeleteBtn.classList.add('button');
+        $todoDeleteBtn.addEventListener('click', () => { deleteTodo(todosArray, project, todo) });
+        let $todoEditBtn = document.createElement('button');
+        $todoEditBtn.innerText = 'Edit todo';
+        $todoEditBtn.classList.add('button');
+        $todoEditBtn.addEventListener('click', () => { editTodo(todo) });
 
         $todoContainer.appendChild($todoTitle);
         $todoContainer.appendChild($todoDescription);
         $todoContainer.appendChild($todoDate);
-        $todoContainer.appendChild($todoDelete);
+        $todoContainer.appendChild($todoDeleteBtn);
+        $todoContainer.appendChild($todoEditBtn);
         $todoListContainer.appendChild($todoContainer);
     });
     
@@ -70,6 +79,7 @@ function renderTodoList(todosArray, $project, project, $todoListContainer) {
 function renderForm (project) {
     let $formContainer = document.querySelector('#form-container');
     $formContainer.innerHTML = '';
+    $formContainer.classList.add('form-show');
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false')
 
@@ -120,20 +130,40 @@ function renderForm (project) {
     $labelPriority.appendChild($inputPriority);
     $form.appendChild($labelPriority);
 
-    let $sendButton = document.createElement('button');
-    $sendButton.innerText = 'Send';
-    $sendButton.onclick = () => { project.createTodo(), hideTodoForm() };
-    $form.appendChild($sendButton);
-
+    let $sendBtn = document.createElement('button');
+    $sendBtn.innerText = 'Send';
+    $sendBtn.onclick = () => { createTodo(project) };
+    $sendBtn.classList.add('button');    
+    $form.appendChild($sendBtn);
     $formContainer.appendChild($form);
 }
 
-function showTodoForm() {
+function deleteForm() {
     let $formContainer = document.querySelector('#form-container');
-    $formContainer.classList.add('form-show');
+    $formContainer.innerHTML = '';
 }
 
-function hideTodoForm() {
-    let $formContainer = document.querySelector('#form-container');
-    $formContainer.classList.remove('form-show');
+function changeProjectName(project) {
+    project.changeTitle(prompt('new title of project'));
+    renderProjects();
+}
+
+function deleteProject(project) {
+    projects.deleteProject(project);
+    renderProjects();
+}
+
+function deleteTodo(todosArray ,project, todo) {
+    project.deleteTodo(todosArray.indexOf(todo));
+    renderProjects();
+}
+
+function createTodo(project) {
+    project.createTodo();
+    deleteForm(); 
+    renderProjects();
+}
+
+function editTodo(todo) {
+    
 }
