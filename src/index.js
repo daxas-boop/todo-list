@@ -27,12 +27,11 @@ class Project {
     }
 
     changeTitle(value) {
-        if (typeof(value) != "undefined" && value.length > 4 ){
+        if (value && value.length > 4 ){
             this.title = value;
         } else{
             alert('Title too short');
         }
-        renderProjects();
     }
 
     createDefaultTodo(title, description, dueDate, priority) {
@@ -48,19 +47,17 @@ class Project {
 
         let todo = new Todo(title, description, dueDate, priority);
         this.todosArray.push(todo);
-        renderProjects();
     }
 
     deleteTodo(index) {
         this.todosArray.splice(index,1);
-        renderProjects();
     }
 
 }
 
 class Todo {
     constructor(title, description, dueDate, priority){
-        if (typeof(title) != "undefined" && title.length >= 4 ){
+        if ( title.length >= 4 ){
             this.title = title;
         } else{
             alert ('Title too short');
@@ -70,7 +67,7 @@ class Todo {
         this.description = description;
 
         
-        if (typeof(dueDate) != "undefined" && dueDate.length >= 4 ){
+        if ( dueDate.length >= 4 ){
             this.dueDate = dueDate;
         } else{
             alert ('Please enter a date');
@@ -81,7 +78,7 @@ class Todo {
     }
 
     changeTitle(title) {
-        if (typeof(title) != "undefined" && title.length >= 4 ){
+        if ( title.length >= 4 ){
             this.title = title;
         } else{
             alert('Title too short');
