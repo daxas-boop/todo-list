@@ -1,7 +1,24 @@
-import { renderProjects } from "./DOMstuff";
-export {projects, addsTodo};
+export { projects };
+import { renderProjects } from './DOMstuff.js'
 
-let projects = [];
+let projects = {
+    totalProjects: [],
+
+    makeDefaultProject: function () {
+        let defaultProject = new Project('Default project');
+        projects.totalProjects.push(defaultProject);
+        defaultProject.createDefaultTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
+    },
+    
+    deleteProject: function(project) {
+        projects.totalProjects.splice(projects.totalProjects.indexOf(project),1)
+    },
+
+    addProject: function() {
+        let project = new Project(prompt('Name of the project', 'Default name'));
+        projects.totalProjects.push(project);
+    }
+};
 
 class Project {
     constructor(title){
@@ -15,15 +32,28 @@ class Project {
         } else{
             alert('Title too short');
         }
+        renderProjects();
     }
 
-    createTodo(title, description) {
-        let todo = new Todo(title, description);
+    createDefaultTodo(title, description, dueDate, priority) {
+        let todo = new Todo(title, description, dueDate, priority);
         this.todosArray.push(todo);
+    }
+
+    createTodo() {
+        let title = document.querySelector('#title-todo').value;
+        let description = document.querySelector('#description-todo').value;
+        let dueDate = document.querySelector('#date-todo').value;
+        let priority = document.querySelector('#priority-todo').value;
+
+        let todo = new Todo(title, description, dueDate, priority);
+        this.todosArray.push(todo);
+        renderProjects();
     }
 
     deleteTodo(index) {
         this.todosArray.splice(index,1);
+        renderProjects();
     }
 
 }
@@ -39,58 +69,45 @@ class Todo {
 
         this.description = description;
 
-        this.dueDate = dueDate;
+        
+        if (typeof(dueDate) != "undefined" && dueDate.length >= 4 ){
+            this.dueDate = dueDate;
+        } else{
+            alert ('Please enter a date');
+            throw 'No date';
+        }
 
         this.priority = priority;
     }
 
-    changeTitle(value) {
-        if (typeof(value) != "undefined" && value.length >= 4 ){
-            this.title = value;
+    changeTitle(title) {
+        if (typeof(title) != "undefined" && title.length >= 4 ){
+            this.title = title;
         } else{
             alert('Title too short');
         }
     }
 
-    changeDescription(value) {
-        this.description = value;
+    changeDescription(description) {
+        this.description = description;
     }
     
-    changeDueDate(value) {
-        this.dueDate = value;
+    changeDueDate(date) {
+        this.dueDate = date;
     }
 
-    changePriority(value) {
-        this.priority = value;
+    changePriority(priority) {
+        this.priority = priority;
     }
-}
-
-function makeDefaultProject() {
-    let defaultProject = new Project('Default project');
-    projects.push(defaultProject);
-    defaultProject.createTodo('Default todo', 'This is a default to do');
 }
 
 function handleButtons() {
     let $addProject = document.querySelector('#add-project');
-    $addProject.addEventListener('click', () => { addProject() });
-}
-
-function addProject() {
-    let project = new Project(prompt('Name of the project', 'Default name'));
-    projects.push(project);
-    renderProjects();
-}
-
-function addsTodo(project) {
-    let title = document.querySelector('#title-todo').value;
-    let description = document.querySelector('#description-todo').value;
-
-    project.createTodo(title, description);
+    $addProject.addEventListener('click', () => { projects.addProject(), renderProjects(); });
 }
 
 function initialize() {
-    makeDefaultProject();
+    projects.makeDefaultProject();
     renderProjects();
     handleButtons();
 }
