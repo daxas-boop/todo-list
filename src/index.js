@@ -1,5 +1,6 @@
 export { projects };
 import { renderProjects } from './DOMstuff.js'
+import { populateStorage, getStorage } from './storage.js'
 
 let projects = {
     totalProjects: [],
@@ -14,9 +15,11 @@ let projects = {
         projects.totalProjects.splice(projects.totalProjects.indexOf(project),1)
     },
 
-    addProject: function() {
-        let project = new Project(prompt('Name of the project', 'Default name'));
+    addProject: function(name) {
+        if (name.length < 4) { alert('Title too short'); return}
+        let project = new Project(name);
         projects.totalProjects.push(project);
+        return project;
     }
 };
 
@@ -27,11 +30,8 @@ class Project {
     }
 
     changeTitle(value) {
-        if (value && value.length > 4 ){
-            this.title = value;
-        } else{
-            alert('Title too short');
-        }
+        if (value.length < 4){ alert('Title too short'); return}
+        this.title = value;
     }
 
     createDefaultTodo(title, description, dueDate, priority) {
@@ -65,7 +65,6 @@ class Todo {
         }
 
         this.description = description;
-
         
         if ( dueDate.length >= 4 ){
             this.dueDate = dueDate;
@@ -90,7 +89,12 @@ class Todo {
     }
     
     changeDueDate(date) {
-        this.dueDate = date;
+        if ( date.length >= 4 ){
+            this.dueDate = date;
+        } else{
+            alert ('Please enter a date');
+            throw 'No date';
+        }
     }
 
     changePriority(priority) {
@@ -99,12 +103,32 @@ class Todo {
 }
 
 function handleButtons() {
-    let $addProject = document.querySelector('#add-project');
-    $addProject.addEventListener('click', () => { projects.addProject(), renderProjects(); });
+    let $addProjectBtn = document.querySelector('#add-project');
+    $addProjectBtn.addEventListener('click', () => { addProject() });
+}
+
+function addProject() {
+    projects.addProject(prompt('Name of the project', 'Default Name'));
+    renderProjects();
+    populateStorage(projects.totalProjects);
+}
+
+function pushStorageToProjects(storageProjects) {
+    if(storageProjects){
+        storageProjects.forEach(storageProject => {
+            let project = projects.addProject(storageProject.title);
+            
+            storageProject.todosArray.forEach( todo => {
+                project.createDefaultTodo(todo.title, todo.description, todo.dueDate, todo.priority);
+            });
+        });
+    }
 }
 
 function initialize() {
-    projects.makeDefaultProject();
+    let storage = getStorage();
+    if(!storage) { projects.makeDefaultProject(), populateStorage(projects.totalProjects) }
+    pushStorageToProjects(storage);
     renderProjects();
     handleButtons();
 }
