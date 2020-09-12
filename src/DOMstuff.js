@@ -6,16 +6,26 @@ export function renderProjects() {
     $projectContainer.innerHTML = '';
     
     projects.totalProjects.forEach( project => {
-        let $project = renderProject(project, $projectContainer);
-        renderTodoList(project.todosArray, $project, project);
+       renderProject(project, $projectContainer);
     });
 }
 
 function renderProject (project, $projectContainer) {
     let $project = document.createElement('div');
     $project.classList.add('project');
-    let $projectTitle = document.createElement('h2');
-    $projectTitle.innerText = project.title;
+    let $projectTitleBtn = document.createElement('button');
+    $projectTitleBtn.innerText = project.title;
+    $projectTitleBtn.classList.add('project-btn');
+    $projectTitleBtn.addEventListener('click', e => { addActiveClass(e, project), renderTodoList(project.todosArray, project) });
+    if (project.active === true) { 
+        $projectTitleBtn.classList.add('active'), 
+        renderTodoList(project.todosArray, project);
+        let $addTodoBtn = document.createElement('button');
+        $addTodoBtn.innerText = 'Add new todo';
+        $addTodoBtn.classList.add('button');
+        $addTodoBtn.addEventListener('click', () => { renderForm(project) });
+        $project.appendChild($addTodoBtn);
+    }
     let $todoListContainer = document.createElement('div');
     $todoListContainer.classList.add('todo-list-container');
 
@@ -29,22 +39,18 @@ function renderProject (project, $projectContainer) {
     $deleteProjectBtn.innerText = 'Delete project';
     $deleteProjectBtn.classList.add('button');
     $deleteProjectBtn.addEventListener('click', () => { deleteProject(project) });
-    let $addTodoBtn = document.createElement('button');
-    $addTodoBtn.innerText = 'Add new todo';
-    $addTodoBtn.classList.add('button');
-    $addTodoBtn.addEventListener('click', () => { renderForm(project) });
-
+    
     $project.appendChild($deleteProjectBtn);
     $project.appendChild($todoListContainer);
-    $project.appendChild($addTodoBtn);
+    
     $project.appendChild($changeProjectNameBtn);
-    $project.appendChild($projectTitle);
+    $project.appendChild($projectTitleBtn);
     $projectContainer.appendChild($project);
     return $project;
 }
 
-function renderTodoList(todosArray, $project, project) {
-    let $todoListContainer = $project.querySelector('.todo-list-container')
+function renderTodoList(todosArray, project) {
+    let $todoListContainer = document.querySelector('#todo-container');
     $todoListContainer.innerHTML = '';
 
     todosArray.forEach( todo => {
@@ -75,14 +81,12 @@ function renderTodoList(todosArray, $project, project) {
         $todoContainer.appendChild($todoEditBtn);
         $todoListContainer.appendChild($todoContainer);
     });
-    
-    $project.appendChild($todoListContainer);
 }
 
 function renderForm (project) {
     let $formContainer = document.querySelector('#form-container');
     $formContainer.innerHTML = '';
-    $formContainer.classList.add('form-show');
+    $formContainer.classList.remove('hidden');
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false')
 
@@ -133,17 +137,28 @@ function renderForm (project) {
     $labelPriority.appendChild($inputPriority);
     $form.appendChild($labelPriority);
 
+    let $closeFormBtn = document.createElement('span')
+    $closeFormBtn.innerText = 'x';
+    $closeFormBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeFormBtn);
+
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
     $sendBtn.onclick = () => { createTodo(project) };
     $sendBtn.classList.add('button');    
     $form.appendChild($sendBtn);
     $formContainer.appendChild($form);
+    let $wall = document.querySelector('#wall');
+    $wall.classList.remove('hidden');
+    $wall.addEventListener('click', () => { deleteForm(); })
 }
 
 function deleteForm() {
     let $formContainer = document.querySelector('#form-container');
     $formContainer.innerHTML = '';
+    $formContainer.classList.add('hidden');
+    let $wall = document.querySelector('#wall');
+    $wall.classList.add('hidden');
 }
 
 function changeProjectName(project) {
@@ -156,25 +171,29 @@ function deleteProject(project) {
     projects.deleteProject(project);
     renderProjects();
     populateStorage(projects.totalProjects);
+    if(project.active === true) {
+        let $todoListContainer = document.querySelector('#todo-container');
+        $todoListContainer.innerHTML = '';
+    }
 }
 
 function deleteTodo(todosArray ,project, todo) {
     project.deleteTodo(todosArray.indexOf(todo));
-    renderProjects();
+    renderTodoList(todosArray, project);
     populateStorage(projects.totalProjects);
 }
 
 function createTodo(project) {
     project.createTodo();
     deleteForm(); 
-    renderProjects();
+    renderTodoList(project.todosArray, project);
     populateStorage(projects.totalProjects);
 }
 
 function renderEditForm(todo) {
     let $formContainer = document.querySelector('#form-container');
     $formContainer.innerHTML = '';
-    $formContainer.classList.add('form-show');
+    $formContainer.classList.remove('hidden');
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false');
 
@@ -229,12 +248,20 @@ function renderEditForm(todo) {
     $labelPriority.appendChild($inputPriority);
     $form.appendChild($labelPriority);
 
+    let $closeFormBtn = document.createElement('span')
+    $closeFormBtn.innerText = 'x';
+    $closeFormBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeFormBtn);
+
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
     $sendBtn.onclick = () => { editTodo(todo) };
     $sendBtn.classList.add('button');    
     $form.appendChild($sendBtn);
     $formContainer.appendChild($form);
+    let $wall = document.querySelector('#wall');
+    $wall.classList.remove('hidden');
+    $wall.addEventListener('click', () => { deleteForm(); })
 }
 
 function editTodo(todo) {
@@ -250,5 +277,17 @@ function editTodo(todo) {
 
     populateStorage(projects.totalProjects);
     deleteForm();
+    renderTodoList(todosArray, project);
+}
+
+function addActiveClass(e, project) {
+    let $btns = document.querySelectorAll('.project .project-btn');
+    let $current = e.target;
+    $btns.forEach( btn =>{ btn.classList.remove('active') });
+    $current.classList.add('active');
+
+    projects.totalProjects.forEach( item => { item.active = false });
+    project.active = true;
+    populateStorage(projects.totalProjects);
     renderProjects();
 }
