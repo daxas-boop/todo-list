@@ -15,17 +15,18 @@ let projects = {
         projects.totalProjects.splice(projects.totalProjects.indexOf(project),1)
     },
 
-    addProject: function(name) {
+    addProject: function(name, active) {
         if (name.length < 4) { alert('Title too short'); return}
-        let project = new Project(name);
+        let project = new Project(name, active);
         projects.totalProjects.push(project);
         return project;
     }
 };
 
 class Project {
-    constructor(title){
+    constructor(title, active){
         this.title = title;
+        this.active = active;
         this.todosArray = [];
     }
 
@@ -57,12 +58,12 @@ class Project {
 
 class Todo {
     constructor(title, description, dueDate, priority){
-        if ( title.length >= 4 ){
-            this.title = title;
-        } else{
-            alert ('Title too short');
-            throw 'Title too short';
-        }
+            if ( title.length >= 4 ){
+                this.title = title;
+            } else{
+                alert ('Title too short');
+                throw 'Title too short';
+            }
 
         this.description = description;
         
@@ -81,6 +82,7 @@ class Todo {
             this.title = title;
         } else{
             alert('Title too short');
+            throw 'Title too short';
         }
     }
 
@@ -108,7 +110,8 @@ function handleButtons() {
 }
 
 function addProject() {
-    projects.addProject(prompt('Name of the project', 'Default Name'));
+    projects.totalProjects.forEach(project =>{ project.active = false });
+    projects.addProject(prompt('Name of the project', 'Default Name'), true);
     renderProjects();
     populateStorage(projects.totalProjects);
 }
@@ -116,7 +119,7 @@ function addProject() {
 function pushStorageToProjects(storageProjects) {
     if(storageProjects){
         storageProjects.forEach(storageProject => {
-            let project = projects.addProject(storageProject.title);
+            let project = projects.addProject(storageProject.title, storageProject.active);
             
             storageProject.todosArray.forEach( todo => {
                 project.createDefaultTodo(todo.title, todo.description, todo.dueDate, todo.priority);
