@@ -8,12 +8,107 @@ html,body {
     height: 100%;
 }
 
+body {
+    padding-bottom: 40px;
+}
+
 #container {
+    position: relative;
     width: 100%;
-    min-height: 100%;
     max-width: 1080px;
+    min-height: 100%;
     background-color: #eee;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0fr 4fr;
+}
+
+#projects-container {
+    grid-column: 1/2;
+    grid-row: 2/3;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#todo-container {
+    grid-column: 2/3;
+    grid-row: 2/3;
+}
+
+#add-project {
+    grid-column: 1/2;
+    grid-row: 1/2;
+}
+
+#wall {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(114, 105, 101, 0.418);
+    z-index: 1;
+}
+
+#form-container {
+    position: absolute;
+    top:25%;
+    left:25%;
+    background-color: orangered;
+    min-height: 50%;
+    width: 50%;
+    padding: 10px;
+    display:flex;
+    flex-direction: row;
+    z-index: 2;
+}
+
+#form-container form {
+    display:flex;
+    flex-direction: column;
+    position: relative;
+}
+
+#form-container form label textarea {
+    resize: none
+}
+
+#form-container form span {
+    position: absolute;
+    right:5px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+header {
+    width: 100%;
+    height: 40px;
+    background-color: rgb(71, 95, 151);
+    top: 0;
+}
+
+footer {
+    position: fixed;
+    width: 100%;
+    height: 40px;
+    background-color: rgb(71, 95, 151);
+    bottom: 0;
+}
+
+.project-btn {
+    border: none;
+    outline: none;
+    padding: 10px 16px;
+    background-color: #ec9c9c;
+    cursor: pointer;
+}
+
+.active, .project-btn:hover {
+  background-color: #666;
+  color: white;
 }
 
 .button:hover {
@@ -30,22 +125,14 @@ html,body {
     display:flex;
 }
 
-#form-container {
-    display: none;
-}
-
-.form-show {
-    display: block !important;
-}
-
 .low-priority {
-    background-color: rgb(78, 255, 47);
+    background-color: rgba(78, 255, 47, 0.5);
 }
 
 .medium-priority {
-    background-color: orange;
+    background-color: rgba(255, 166, 0, 0.5);
 }
 
 .high-priority {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.5);
 }
