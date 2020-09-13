@@ -1,9 +1,15 @@
-import { projects } from './index.js';
-import { populateStorage, getStorage } from './storage.js';
+import { projects, addProject } from './index.js';
+import { populateStorage } from './storage.js';
 
 export function renderProjects() {
     let $projectContainer = document.querySelector('#projects-container');
     $projectContainer.innerHTML = '';
+    let $addProjectBtn = document.createElement('button');
+    $addProjectBtn.setAttribute('id', 'add-project');
+    $addProjectBtn.classList.add('button');
+    $addProjectBtn.innerText = 'Add Project'
+    $addProjectBtn.addEventListener('click', () => { addProject() });
+    $projectContainer.appendChild($addProjectBtn);
     
     projects.totalProjects.forEach( project => {
        renderProject(project, $projectContainer);
@@ -16,13 +22,14 @@ function renderProject (project, $projectContainer) {
     let $projectTitleBtn = document.createElement('button');
     $projectTitleBtn.innerText = project.title;
     $projectTitleBtn.classList.add('project-btn');
-    $projectTitleBtn.addEventListener('click', e => { addActiveClass(e, project), renderTodoList(project.todosArray, project) });
+    $projectTitleBtn.addEventListener('click', e => { addActiveClass(e, project) });
     if (project.active === true) { 
         $projectTitleBtn.classList.add('active'), 
         renderTodoList(project.todosArray, project);
         let $addTodoBtn = document.createElement('button');
         $addTodoBtn.innerText = 'Add new todo';
         $addTodoBtn.classList.add('button');
+        $addTodoBtn.classList.add('add-todo-btn');
         $addTodoBtn.addEventListener('click', () => { renderForm(project) });
         $project.appendChild($addTodoBtn);
     }
@@ -52,7 +59,15 @@ function renderProject (project, $projectContainer) {
 function renderTodoList(todosArray, project) {
     let $todoListContainer = document.querySelector('#todo-container');
     $todoListContainer.innerHTML = '';
-
+    
+    if(project.todosArray.length === 0) {
+        let $emptyTitle = document.createElement('h2');
+        $emptyTitle.classList.add('empty');
+        let quote = randomQuote();
+        $emptyTitle.innerText = quote;
+        $todoListContainer.appendChild($emptyTitle);
+    }
+    
     todosArray.forEach( todo => {
         let $todoContainer = document.createElement('div');
         $todoContainer.classList.add('todo-container');
@@ -91,26 +106,33 @@ function renderForm (project) {
     $form.setAttribute('onsubmit','return false')
 
     let $labelTitle = document.createElement('label');
-    $labelTitle.innerText = 'Title';
+    let $labelTitleText = document.createElement('span');
+    $labelTitleText.innerText = 'Title';
     let $inputTitle = document.createElement('input');
+    $labelTitle.appendChild($labelTitleText);
     $inputTitle.setAttribute('type', 'text');
     $inputTitle.setAttribute('id', 'title-todo');
     $labelTitle.appendChild($inputTitle);
     $form.appendChild($labelTitle);
 
     let $labelDescription = document.createElement('label');
-    $labelDescription.innerText = 'Description';
+    $labelDescription.classList.add('label-description');
+    let $labelDescriptionText = document.createElement('span');
+    $labelDescriptionText.innerText = 'Description';
     let $inputDescription = document.createElement('textarea');
     $inputDescription.setAttribute('id', 'description-todo');
+    $labelDescription.appendChild($labelDescriptionText);
     $labelDescription.appendChild($inputDescription);
     $form.appendChild($labelDescription);
 
     let $labelDate = document.createElement('label');
-    $labelDate.innerText = 'Date';
+    let $labelDateText = document.createElement('span');
+    $labelDateText.innerText = 'Date';
     let $inputDate = document.createElement('input');
     $inputDate.setAttribute('type', 'date');
     $inputDate.setAttribute('id', 'date-todo');
     $inputDate.setAttribute('min', new Date().toISOString().split("T")[0]);
+    $labelDate.appendChild($labelDateText);
     $labelDate.appendChild($inputDate);
     $form.appendChild($labelDate);
 
@@ -136,11 +158,6 @@ function renderForm (project) {
 
     $labelPriority.appendChild($inputPriority);
     $form.appendChild($labelPriority);
-
-    let $closeFormBtn = document.createElement('span')
-    $closeFormBtn.innerText = 'x';
-    $closeFormBtn.addEventListener('click', () => { deleteForm(); })
-    $form.appendChild($closeFormBtn);
 
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
@@ -198,8 +215,10 @@ function renderEditForm(todo) {
     $form.setAttribute('onsubmit','return false');
 
     let $labelTitle = document.createElement('label');
-    $labelTitle.innerText = 'Title';
+    let $labelTitleText = document.createElement('span');
+    $labelTitleText.innerText = 'Title';
     let $inputTitle = document.createElement('input');
+    $labelTitle.appendChild($labelTitleText);
     $inputTitle.setAttribute('type', 'text');
     $inputTitle.setAttribute('id', 'title-todo');
     $inputTitle.value = todo.title;
@@ -207,25 +226,32 @@ function renderEditForm(todo) {
     $form.appendChild($labelTitle);
 
     let $labelDescription = document.createElement('label');
-    $labelDescription.innerText = 'Description';
+    $labelDescription.classList.add('label-description');
+    let $labelDescriptionText = document.createElement('span');
+    $labelDescriptionText.innerText = 'Description';
     let $inputDescription = document.createElement('textarea');
-    $inputDescription.innerText = todo.description;
     $inputDescription.setAttribute('id', 'description-todo');
+    $inputDescription.value = todo.description;
+    $labelDescription.appendChild($labelDescriptionText);
     $labelDescription.appendChild($inputDescription);
     $form.appendChild($labelDescription);
 
     let $labelDate = document.createElement('label');
-    $labelDate.innerText = 'Date';
+    let $labelDateText = document.createElement('span');
+    $labelDateText.innerText = 'Date';
     let $inputDate = document.createElement('input');
     $inputDate.setAttribute('type', 'date');
     $inputDate.setAttribute('id', 'date-todo');
     $inputDate.value = todo.dueDate;
     $inputDate.setAttribute('min', new Date().toISOString().split("T")[0]);
+    $labelDate.appendChild($labelDateText);
     $labelDate.appendChild($inputDate);
     $form.appendChild($labelDate);
 
     let $labelPriority = document.createElement('label');
-    $labelPriority.innerText = 'Priority';
+    let $labelPriorityText = document.createElement('span');
+    $labelPriorityText.innerText = 'Priority';
+    $labelPriority.appendChild($labelPriorityText);
     let $inputPriority = document.createElement('select');
     $inputPriority.setAttribute('id', 'priority-todo');
 
@@ -247,11 +273,6 @@ function renderEditForm(todo) {
     $inputPriority.value = todo.priority;
     $labelPriority.appendChild($inputPriority);
     $form.appendChild($labelPriority);
-
-    let $closeFormBtn = document.createElement('span')
-    $closeFormBtn.innerText = 'x';
-    $closeFormBtn.addEventListener('click', () => { deleteForm(); })
-    $form.appendChild($closeFormBtn);
 
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
@@ -290,4 +311,11 @@ function addActiveClass(e, project) {
     project.active = true;
     populateStorage(projects.totalProjects);
     renderProjects();
+}
+
+function randomQuote() {
+    let quotes = ['How can emptiness be so heavy?', 'Not sad, not happy, but empty','Why does the feeling of emptiness ocuppy so much space', 'Only empty spaces can be filled'];
+    let quote = quotes[Math.floor(quotes.length * Math.random())];
+    
+    return quote;
 }
