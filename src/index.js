@@ -1,4 +1,4 @@
-export { projects };
+export { projects, addProject };
 import { renderProjects } from './DOMstuff.js'
 import { populateStorage, getStorage } from './storage.js'
 
@@ -104,11 +104,6 @@ class Todo {
     }
 }
 
-function handleButtons() {
-    let $addProjectBtn = document.querySelector('#add-project');
-    $addProjectBtn.addEventListener('click', () => { addProject() });
-}
-
 function addProject() {
     projects.totalProjects.forEach(project =>{ project.active = false });
     projects.addProject(prompt('Name of the project', 'Default Name'), true);
@@ -133,7 +128,6 @@ function initialize() {
     if(!storage) { projects.makeDefaultProject(), populateStorage(projects.totalProjects) }
     pushStorageToProjects(storage);
     renderProjects();
-    handleButtons();
 }
 
 initialize();
