@@ -1,27 +1,24 @@
 *{
-    padding:0;
     margin: 0;
-}
-
-html,body {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    padding-bottom: 40px;
 }
 
 #container {
     position: relative;
-    width: 100%;
-    max-width: 1080px;
-    min-height: 100%;
+    max-width: 1024px;
+    min-height: 100vh;
+    max-height: 100vh;
     background-color: #eee;
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 0fr 4fr;
+    grid-template-rows: 200px 1fr 40px;
+    gap:5px;
+}
+
+#container #title {
+    margin-top: 15px;
+    text-align: center;
+    grid-column: 1/3;
 }
 
 #projects-container {
@@ -29,85 +26,140 @@ body {
     grid-row: 2/3;
     display:flex;
     flex-direction: column;
-    justify-content: flex-end;
+    overflow: auto;
 }
 
 #todo-container {
+    text-align: center;
     grid-column: 2/3;
     grid-row: 2/3;
+    height: 100%;
+    overflow: auto;
+}
+
+#todo-container h2 {
+    font-style: oblique;
+    align-self: center;
+    margin:180px 0;
+}
+
+.todo-container {
+    border:1px solid black;
+    margin: 1px 0;
+    word-break: break-all;
 }
 
 #add-project {
     grid-column: 1/2;
-    grid-row: 1/2;
+    grid-row: 2/3;
 }
 
 #wall {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(114, 105, 101, 0.418);
+    min-width: 100%;
+    min-height: 100%;
+    background-color: rgba(114, 105, 101, 0.7);
     z-index: 1;
+    top:0;
 }
 
 #form-container {
     position: absolute;
     top:25%;
     left:25%;
-    background-color: orangered;
+    background-color: white;
     min-height: 50%;
-    width: 50%;
+    width: 45%;
     padding: 10px;
+    border-radius: 5px;
     display:flex;
     flex-direction: row;
     z-index: 2;
 }
 
 #form-container form {
-    display:flex;
-    flex-direction: column;
+    display: grid;
     position: relative;
+    width: 100%;
+    min-height: 100%;
+    grid-template-rows: repeat(4,1fr);
+}
+
+#form-container form input,
+#form-container form textarea,
+#form-container form select{
+    background-color: rgb(231, 230, 230);
+    border:none;
+    border-radius: 5px;
+    padding:5px;
+    outline:none;
+    height: 50%;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
+#form-container form input {
+    height: 20%;
+}
+
+#form-container form input[type='date']{
+    width: 50%;
+}
+
+#form-container form select {
+    height: 35%;
+    width: 50%;
+}
+
+#form-container form label {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+#form-container form label span {
+    margin: 10px;
+}
+
+#form-container form select:hover {
+    cursor: pointer;
+}
+
+#form-container form button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+    padding:10px 15px;
+    border:none;
+    background-color:rgb(92, 82, 230);
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+#form-container form button:hover {
+    background-color:rgb(114, 107, 209);
 }
 
 #form-container form label textarea {
     resize: none
 }
 
-#form-container form span {
-    position: absolute;
-    right:5px;
-    cursor: pointer;
-}
-
 .hidden {
     display: none !important;
 }
 
-header {
-    width: 100%;
-    height: 40px;
-    background-color: rgb(71, 95, 151);
-    top: 0;
-}
-
 footer {
-    position: fixed;
     width: 100%;
     height: 40px;
     background-color: rgb(71, 95, 151);
-    bottom: 0;
-}
-
-.project-btn {
-    border: none;
-    outline: none;
-    padding: 10px 16px;
-    background-color: #ec9c9c;
-    cursor: pointer;
+    grid-row: 3/4 ;
+    grid-column: 1/3;
+    text-align: center;
 }
 
 .active, .project-btn:hover {
-  background-color: #666;
+  background: rgb(4, 114, 0) !important;
   color: white;
 }
 
@@ -122,7 +174,42 @@ footer {
 }
 
 .project {
-    display:flex;
+    display:grid;
+    margin:5px;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 2fr 1fr;
+    gap:1px;
+}
+
+.project .add-todo-btn {
+    background-color: rgb(212, 203, 117);
+    outline: none;
+    border: 1px solid rgb(133, 126, 66);
+    grid-column: 4/5;
+    grid-row: 1/3;
+}
+
+.project .change-project-name {
+    grid-column: 2/4;
+    grid-row:2/3;
+}
+
+.project .delete-project{
+    grid-column: 1/2;
+    grid-row:2/3;
+    background-color: red;
+    outline: none;
+    border: 1px solid;
+}
+
+.project-btn {
+    outline: none;
+    padding: 10px 16px;
+    background: #7ffb73;
+    cursor: pointer;
+    border:1px solid rgb(38, 112, 44);
+    grid-column: 1/4;
 }
 
 .low-priority {
@@ -135,4 +222,10 @@ footer {
 
 .high-priority {
     background-color: rgba(255, 0, 0, 0.5);
+}
+
+@media only screen and (min-width: 1920px) {
+    #container{
+        max-width: 1280px;
+    }
 }
