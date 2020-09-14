@@ -6,7 +6,7 @@ let projects = {
     totalProjects: [],
 
     makeDefaultProject: function () {
-        let defaultProject = new Project('Default project');
+        let defaultProject = new Project('Default project', true);
         projects.totalProjects.push(defaultProject);
         defaultProject.createDefaultTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
     },
@@ -16,7 +16,10 @@ let projects = {
     },
 
     addProject: function(name, active) {
-        if (name.length < 4) { alert('Title too short'); return}
+        if (name.length < 4 || name.length > 20){
+            alert ('The title of the project need to have between 4 and 20 characters');
+            throw 'Invalid title';
+        }
         let project = new Project(name, active);
         projects.totalProjects.push(project);
         return project;
@@ -30,9 +33,13 @@ class Project {
         this.todosArray = [];
     }
 
-    changeTitle(value) {
-        if (value.length < 4){ alert('Title too short'); return}
-        this.title = value;
+    changeTitle(name) {
+        if (name.length < 4 || name.length > 20){
+            alert ('The title of the project need to have between 4 and 20 characters');
+            throw 'Invalid title';
+        }else{
+            this.title = name;
+        }
     }
 
     createDefaultTodo(title, description, dueDate, priority) {
@@ -104,9 +111,9 @@ class Todo {
     }
 }
 
-function addProject() {
+function addProject(title) {
     projects.totalProjects.forEach(project =>{ project.active = false });
-    projects.addProject(prompt('Name of the project', 'Default Name'), true);
+    projects.addProject(title, true);
     renderProjects();
     populateStorage(projects.totalProjects);
 }
