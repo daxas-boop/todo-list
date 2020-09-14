@@ -121,6 +121,21 @@
     transition: all 0.3s ease 0s;
 }
 
+.close-form-btn {
+    cursor: pointer;
+    position: absolute;
+    font-size:20px;
+    top:0;
+    right:0;
+    font-weight: bolder;
+    color:red;
+    transition: all 0.3s ease 0s;
+}
+
+.close-form-btn:hover{
+    transform: scale(1.5);
+}
+
 #add-project {
     grid-column: 1/2;
     grid-row: 2/3;
@@ -156,6 +171,7 @@
     width: 100%;
     min-height: 100%;
     grid-template-rows: repeat(4,1fr);
+    padding: 20px 5px;
 }
 
 #form-container form input,
@@ -365,7 +381,7 @@ footer img {
 }
 
 .project-btn {
-    word-break: break-all;
+    word-break: break-word;
     outline: none;
     padding: 10px 16px;
     background: #7ffb73;
@@ -379,14 +395,33 @@ footer img {
     position: static;
     grid-row: 4/5;
     border:none;
+    border-radius: 5px;
     margin-top: 5px;
+    font-weight: bolder;
+    font-size:18px;
+    transition: all 0.4s ease 0s;
+}
+
+#close-btn:hover {
+    background-color: thistle;
+    letter-spacing: 3px;
 }
 
 #delete-btn {
+    color:white;
+    font-weight: bolder;
+    font-size:18px;
     position: static;
     background-color: red;
     border:none; 
+    border-radius: 5px;
     grid-row: 3/4;
+    transition: all 0.4s ease 0s;
+}
+
+#delete-btn:hover {
+    background-color: rgb(189, 0, 0);
+    letter-spacing: 3px
 }
 
 .low-priority {
@@ -411,5 +446,18 @@ footer img {
     #form-container {
         width: 90%;
         left: 2.5%;
+    }
+
+    .project-btn {
+        font-size: 1em;
+    }
+
+    .project .add-todo-btn {
+        grid-column: 4/5;
+        grid-row: 1/2;
+    }
+
+    .project .change-project-name{
+        grid-column: 2/5;
     }
 }
