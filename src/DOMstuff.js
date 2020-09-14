@@ -8,7 +8,7 @@ export function renderProjects() {
     $addProjectBtn.setAttribute('id', 'add-project');
     $addProjectBtn.classList.add('button');
     $addProjectBtn.innerText = 'Add Project'
-    $addProjectBtn.addEventListener('click', () => { addProject() });
+    $addProjectBtn.addEventListener('click', () => { renderAddProjectForm() });
     $projectContainer.appendChild($addProjectBtn);
     
     projects.totalProjects.forEach( project => {
@@ -20,7 +20,7 @@ function renderProject (project, $projectContainer) {
     let $project = document.createElement('div');
     $project.classList.add('project');
     let $projectTitleBtn = document.createElement('button');
-    $projectTitleBtn.innerText = project.title;
+    $projectTitleBtn.innerText = `Project: ${project.title}`;
     $projectTitleBtn.classList.add('project-btn');
     $projectTitleBtn.addEventListener('click', e => { addActiveClass(e, project) });
     if (project.active === true) { 
@@ -40,12 +40,12 @@ function renderProject (project, $projectContainer) {
     $changeProjectNameBtn.setAttribute('class','change-project-name');
     $changeProjectNameBtn.classList.add('button');
     $changeProjectNameBtn.innerText = 'Change project name';
-    $changeProjectNameBtn.addEventListener('click', () => { changeProjectName(project) });
+    $changeProjectNameBtn.addEventListener('click', () => { renderChangeProjectNameForm(project) });
     let $deleteProjectBtn = document.createElement('button');
     $deleteProjectBtn.setAttribute('class','delete-project');
     $deleteProjectBtn.innerText = 'Delete project';
     $deleteProjectBtn.classList.add('button');
-    $deleteProjectBtn.addEventListener('click', () => { deleteProject(project) });
+    $deleteProjectBtn.addEventListener('click', () => { renderDeletePopup(project) });
     
     $project.appendChild($deleteProjectBtn);
     $project.appendChild($todoListContainer);
@@ -73,20 +73,18 @@ function renderTodoList(todosArray, project) {
         $todoContainer.classList.add('todo-container');
         $todoContainer.classList.add(`${todo.priority}-priority`);
         let $todoTitle = document.createElement('h4');
-        $todoTitle.innerText = todo.title;
+        $todoTitle.innerText = `${todo.title}`;
         let $todoDescription = document.createElement('p');
-        $todoDescription.innerText = todo.description;
+        $todoDescription.innerText = `${todo.description}`;
         let $todoDate = document.createElement('p');
-        $todoDate.innerText = todo.dueDate;
-        let $todoPriority = document.createElement('p');
-        $todoPriority.innerText = `${todo.priority}`
+        $todoDate.innerText = `Due Date: ${todo.dueDate}`;
         let $todoDeleteBtn = document.createElement('button');
         $todoDeleteBtn.innerText = 'Delete todo';
-        $todoDeleteBtn.classList.add('button');
-        $todoDeleteBtn.addEventListener('click', () => { deleteTodo(todosArray, project, todo) });
+        $todoDeleteBtn.classList.add('delete-todo-btn');
+        $todoDeleteBtn.addEventListener('click', () => { renderDeletePopup(project, todosArray, todo) });
         let $todoEditBtn = document.createElement('button');
         $todoEditBtn.innerText = 'Edit todo';
-        $todoEditBtn.classList.add('button');
+        $todoEditBtn.classList.add('edit-todo-btn');
         $todoEditBtn.addEventListener('click', () => { renderEditForm(todo) });
 
         $todoContainer.appendChild($todoTitle);
@@ -107,7 +105,7 @@ function renderForm (project) {
 
     let $labelTitle = document.createElement('label');
     let $labelTitleText = document.createElement('span');
-    $labelTitleText.innerText = 'Title';
+    $labelTitleText.innerText = 'Title:*';
     let $inputTitle = document.createElement('input');
     $labelTitle.appendChild($labelTitleText);
     $inputTitle.setAttribute('type', 'text');
@@ -118,7 +116,7 @@ function renderForm (project) {
     let $labelDescription = document.createElement('label');
     $labelDescription.classList.add('label-description');
     let $labelDescriptionText = document.createElement('span');
-    $labelDescriptionText.innerText = 'Description';
+    $labelDescriptionText.innerText = 'Description:';
     let $inputDescription = document.createElement('textarea');
     $inputDescription.setAttribute('id', 'description-todo');
     $labelDescription.appendChild($labelDescriptionText);
@@ -127,7 +125,7 @@ function renderForm (project) {
 
     let $labelDate = document.createElement('label');
     let $labelDateText = document.createElement('span');
-    $labelDateText.innerText = 'Date';
+    $labelDateText.innerText = 'Date:*';
     let $inputDate = document.createElement('input');
     $inputDate.setAttribute('type', 'date');
     $inputDate.setAttribute('id', 'date-todo');
@@ -137,7 +135,7 @@ function renderForm (project) {
     $form.appendChild($labelDate);
 
     let $labelPriority = document.createElement('label');
-    $labelPriority.innerText = 'Priority';
+    $labelPriority.innerText = 'Priority:';
     let $inputPriority = document.createElement('select');
     $inputPriority.setAttribute('id', 'priority-todo');
 
@@ -162,7 +160,8 @@ function renderForm (project) {
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
     $sendBtn.onclick = () => { createTodo(project) };
-    $sendBtn.classList.add('button');    
+    $sendBtn.classList.add('button');
+    $sendBtn.classList.add('send-btn');
     $form.appendChild($sendBtn);
     $formContainer.appendChild($form);
     let $wall = document.querySelector('#wall');
@@ -179,9 +178,11 @@ function deleteForm() {
 }
 
 function changeProjectName(project) {
-    project.changeTitle(prompt('new title of project'));
+    let title = document.querySelector('#project-title').value
+    project.changeTitle(title);
     renderProjects();
     populateStorage(projects.totalProjects);
+    deleteForm();
 }
 
 function deleteProject(project) {
@@ -216,7 +217,7 @@ function renderEditForm(todo) {
 
     let $labelTitle = document.createElement('label');
     let $labelTitleText = document.createElement('span');
-    $labelTitleText.innerText = 'Title';
+    $labelTitleText.innerText = 'Title*';
     let $inputTitle = document.createElement('input');
     $labelTitle.appendChild($labelTitleText);
     $inputTitle.setAttribute('type', 'text');
@@ -228,7 +229,7 @@ function renderEditForm(todo) {
     let $labelDescription = document.createElement('label');
     $labelDescription.classList.add('label-description');
     let $labelDescriptionText = document.createElement('span');
-    $labelDescriptionText.innerText = 'Description';
+    $labelDescriptionText.innerText = 'Description:';
     let $inputDescription = document.createElement('textarea');
     $inputDescription.setAttribute('id', 'description-todo');
     $inputDescription.value = todo.description;
@@ -238,7 +239,7 @@ function renderEditForm(todo) {
 
     let $labelDate = document.createElement('label');
     let $labelDateText = document.createElement('span');
-    $labelDateText.innerText = 'Date';
+    $labelDateText.innerText = 'Date*';
     let $inputDate = document.createElement('input');
     $inputDate.setAttribute('type', 'date');
     $inputDate.setAttribute('id', 'date-todo');
@@ -250,7 +251,7 @@ function renderEditForm(todo) {
 
     let $labelPriority = document.createElement('label');
     let $labelPriorityText = document.createElement('span');
-    $labelPriorityText.innerText = 'Priority';
+    $labelPriorityText.innerText = 'Priority:';
     $labelPriority.appendChild($labelPriorityText);
     let $inputPriority = document.createElement('select');
     $inputPriority.setAttribute('id', 'priority-todo');
@@ -277,7 +278,8 @@ function renderEditForm(todo) {
     let $sendBtn = document.createElement('button');
     $sendBtn.innerText = 'Send';
     $sendBtn.onclick = () => { editTodo(todo) };
-    $sendBtn.classList.add('button');    
+    $sendBtn.classList.add('button');
+    $sendBtn.classList.add('send-btn');  
     $form.appendChild($sendBtn);
     $formContainer.appendChild($form);
     let $wall = document.querySelector('#wall');
@@ -314,8 +316,121 @@ function addActiveClass(e, project) {
 }
 
 function randomQuote() {
-    let quotes = ['How can emptiness be so heavy?', 'Not sad, not happy, but empty','Why does the feeling of emptiness ocuppy so much space', 'Only empty spaces can be filled'];
+    let quotes = ['"How can emptiness be so heavy?"', 
+    '"Not sad, not happy, but empty"',
+    '"Why does the feeling of emptiness ocuppy so much space"',
+    '"Only empty spaces can be filled"'];
     let quote = quotes[Math.floor(quotes.length * Math.random())];
     
     return quote;
+}
+
+function renderAddProjectForm() {
+    let $formContainer = document.querySelector('#form-container');
+    $formContainer.innerHTML = '';
+    $formContainer.classList.remove('hidden');
+    let $form = document.createElement('form');
+    $form.setAttribute('onsubmit','return false');
+
+    let $title = document.createElement('h2');
+    $title.innerText = 'Add a new Project';
+    $form.appendChild($title);
+
+    let $labelTitle = document.createElement('label');
+    let $labelTitleText = document.createElement('span');
+    $labelTitleText.innerText = 'Title*';
+    let $inputTitle = document.createElement('input');
+    $labelTitle.appendChild($labelTitleText);
+    $inputTitle.setAttribute('type', 'text');
+    $inputTitle.setAttribute('id', 'project-title');
+    $labelTitle.appendChild($inputTitle);
+    $form.appendChild($labelTitle);
+    $formContainer.appendChild($form);
+
+    let $sendBtn = document.createElement('button');
+    $sendBtn.innerText = 'Send';
+    $sendBtn.onclick = () => { addProject($inputTitle.value),  deleteForm(); };
+    $sendBtn.classList.add('button');
+    $sendBtn.classList.add('send-btn');    
+    $form.appendChild($sendBtn);
+    $formContainer.appendChild($form);
+    let $wall = document.querySelector('#wall');
+    $wall.classList.remove('hidden');
+    $wall.addEventListener('click', () => { deleteForm(); })
+}
+
+function renderChangeProjectNameForm(project) {
+    let $formContainer = document.querySelector('#form-container');
+    $formContainer.innerHTML = '';
+    $formContainer.classList.remove('hidden');
+    let $form = document.createElement('form');
+    $form.setAttribute('onsubmit','return false');
+
+    let $title = document.createElement('h2');
+    $title.innerText = 'Change the project name';
+    $form.appendChild($title);
+
+    let $labelTitle = document.createElement('label');
+    let $labelTitleText = document.createElement('span');
+    $labelTitleText.innerText = 'Title*';
+    let $inputTitle = document.createElement('input');
+    $labelTitle.appendChild($labelTitleText);
+    $inputTitle.setAttribute('type', 'text');
+    $inputTitle.setAttribute('id', 'project-title');
+    $inputTitle.value = project.title;
+    $labelTitle.appendChild($inputTitle);
+    $form.appendChild($labelTitle);
+    $formContainer.appendChild($form);
+
+    let $sendBtn = document.createElement('button');
+    $sendBtn.innerText = 'Send';
+    $sendBtn.onclick = () => { changeProjectName(project) };
+    $sendBtn.classList.add('button');
+    $sendBtn.classList.add('send-btn');
+    $form.appendChild($sendBtn);
+    $formContainer.appendChild($form);
+    let $wall = document.querySelector('#wall');
+    $wall.classList.remove('hidden');
+    $wall.addEventListener('click', () => { deleteForm(); })
+}
+
+function renderDeletePopup(project ,todosArray, todo) {
+    let $formContainer = document.querySelector('#form-container');
+    $formContainer.innerHTML = '';
+    $formContainer.classList.remove('hidden');
+    let $form = document.createElement('form');
+    $form.setAttribute('onsubmit','return false');
+
+    let $title = document.createElement('h2');
+    $form.appendChild($title)
+
+    let $deleteBtn = document.createElement('button');
+    $deleteBtn.innerText = 'Yes, delete it';
+    $deleteBtn.classList.add('button');
+    $deleteBtn.setAttribute('id', 'delete-btn')
+    $form.appendChild($deleteBtn);
+    $formContainer.appendChild($form);
+
+    let $closeBtn = document.createElement('button');
+    $closeBtn.innerText = "No, don't delete it";
+    $closeBtn.classList.add('button');
+    $closeBtn.setAttribute('id', 'close-btn')
+    $form.appendChild($closeBtn);
+    $formContainer.appendChild($form);
+
+    let $wall = document.querySelector('#wall');
+    $wall.classList.remove('hidden');
+    $wall.addEventListener('click', () => { deleteForm(); })
+
+    
+    if (typeof todo === 'undefined') {
+        $title.innerText = `Do you want to delete the project "${project.title}" ?`
+        $deleteBtn.onclick = () => { deleteProject(project), deleteForm(); };
+        $closeBtn.onclick = () => { deleteForm(); };
+    } else {
+        $title.innerText = `Do you want to delete the todo "${todo.title}" ?` 
+        $deleteBtn.onclick = () => { deleteTodo(todosArray, project, todo), deleteForm(); };
+        $closeBtn.onclick = () => { deleteForm(); };
+    }
+   
 }
