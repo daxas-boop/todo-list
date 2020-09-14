@@ -103,6 +103,12 @@ function renderForm (project) {
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false')
 
+    let $closeBtn = document.createElement('span');
+    $closeBtn.innerText = '×';
+    $closeBtn.classList.add('close-form-btn');
+    $closeBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeBtn);
+
     let $labelTitle = document.createElement('label');
     let $labelTitleText = document.createElement('span');
     $labelTitleText.innerText = 'Title:*';
@@ -215,6 +221,12 @@ function renderEditForm(todo) {
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false');
 
+    let $closeBtn = document.createElement('span');
+    $closeBtn.innerText = '×';
+    $closeBtn.classList.add('close-form-btn');
+    $closeBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeBtn);
+
     let $labelTitle = document.createElement('label');
     let $labelTitleText = document.createElement('span');
     $labelTitleText.innerText = 'Title*';
@@ -317,9 +329,12 @@ function addActiveClass(e, project) {
 
 function randomQuote() {
     let quotes = ['"How can emptiness be so heavy?"', 
-    '"Not sad, not happy, but empty"',
-    '"Why does the feeling of emptiness ocuppy so much space"',
-    '"Only empty spaces can be filled"'];
+    '"Not sad, not happy, but empty."',
+    '"Why does the feeling of emptiness ocuppy so much space."',
+    '"Only empty spaces can be filled."',
+    '"Silence isn\'t empty, it\'s full of answers."',
+    '"It\'s all blank. All empty."',
+    '"I feel so empty inside."'];
     let quote = quotes[Math.floor(quotes.length * Math.random())];
     
     return quote;
@@ -331,6 +346,12 @@ function renderAddProjectForm() {
     $formContainer.classList.remove('hidden');
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false');
+
+    let $closeBtn = document.createElement('span');
+    $closeBtn.innerText = '×';
+    $closeBtn.classList.add('close-form-btn');
+    $closeBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeBtn);
 
     let $title = document.createElement('h2');
     $title.innerText = 'Add a new Project';
@@ -365,6 +386,12 @@ function renderChangeProjectNameForm(project) {
     $formContainer.classList.remove('hidden');
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false');
+
+    let $closeBtn = document.createElement('span');
+    $closeBtn.innerText = '×';
+    $closeBtn.classList.add('close-form-btn');
+    $closeBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeBtn);
 
     let $title = document.createElement('h2');
     $title.innerText = 'Change the project name';
@@ -401,6 +428,12 @@ function renderDeletePopup(project ,todosArray, todo) {
     let $form = document.createElement('form');
     $form.setAttribute('onsubmit','return false');
 
+    let $closeBtn = document.createElement('span');
+    $closeBtn.innerText = '×';
+    $closeBtn.classList.add('close-form-btn');
+    $closeBtn.addEventListener('click', () => { deleteForm(); })
+    $form.appendChild($closeBtn);
+
     let $title = document.createElement('h2');
     $form.appendChild($title)
 
@@ -411,11 +444,11 @@ function renderDeletePopup(project ,todosArray, todo) {
     $form.appendChild($deleteBtn);
     $formContainer.appendChild($form);
 
-    let $closeBtn = document.createElement('button');
-    $closeBtn.innerText = "No, don't delete it";
-    $closeBtn.classList.add('button');
-    $closeBtn.setAttribute('id', 'close-btn')
-    $form.appendChild($closeBtn);
+    let $dontDeleteBtn = document.createElement('button');
+    $dontDeleteBtn.innerText = "No, don't delete it";
+    $dontDeleteBtn.classList.add('button');
+    $dontDeleteBtn.setAttribute('id', 'close-btn')
+    $form.appendChild($dontDeleteBtn);
     $formContainer.appendChild($form);
 
     let $wall = document.querySelector('#wall');
@@ -426,11 +459,11 @@ function renderDeletePopup(project ,todosArray, todo) {
     if (typeof todo === 'undefined') {
         $title.innerText = `Do you want to delete the project "${project.title}" ?`
         $deleteBtn.onclick = () => { deleteProject(project), deleteForm(); };
-        $closeBtn.onclick = () => { deleteForm(); };
+        $dontDeleteBtn.onclick = () => { deleteForm(); };
     } else {
         $title.innerText = `Do you want to delete the todo "${todo.title}" ?` 
         $deleteBtn.onclick = () => { deleteTodo(todosArray, project, todo), deleteForm(); };
-        $closeBtn.onclick = () => { deleteForm(); };
+        $dontDeleteBtn.onclick = () => { deleteForm(); };
     }
    
 }
