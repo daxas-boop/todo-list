@@ -1,5 +1,25 @@
 *{
     margin: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(199, 45, 45);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
 #container {
@@ -7,11 +27,11 @@
     max-width: 1024px;
     min-height: 100vh;
     max-height: 100vh;
-    background-color: #eee;
+    background-color: #f8f9fa;
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 200px 1fr 40px;
+    grid-template-rows: 150px 1fr 40px;
     gap:5px;
 }
 
@@ -40,13 +60,65 @@
 #todo-container h2 {
     font-style: oblique;
     align-self: center;
-    margin:180px 0;
+    margin:170px 10px;
 }
 
 .todo-container {
-    border:1px solid black;
-    margin: 1px 0;
-    word-break: break-all;
+    -webkit-box-shadow: inset 0px 0px 12px 1px rgba(0,0,0,0.50);
+    -moz-box-shadow: inset 0px 0px 12px 1px rgba(0,0,0,0.50);
+    box-shadow: inset 0px 0px 12px 1px rgba(0,0,0,0.50);
+    margin: 5px 0;
+    word-break: break-word;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.todo-container > p {
+    margin: 10px 0;
+}
+
+.delete-todo-btn {
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #ed3330;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.4s ease 0s;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.delete-todo-btn:hover {
+    cursor: pointer;
+    background:#a10000;
+    letter-spacing: 3px;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.3s ease 0s;
+}
+
+.edit-todo-btn {
+    font-weight: bold;
+    border: none;
+    background: #404040;
+    color: #ffffff !important;
+    padding: 5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition: all 0.3s ease 0s;
+}
+
+.edit-todo-btn:hover {
+    cursor: pointer;
+    background: #2b2b2b;
+    letter-spacing: 3px;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.3s ease 0s;
 }
 
 #add-project {
@@ -55,6 +127,7 @@
 }
 
 #wall {
+    cursor: pointer;
     position: absolute;
     min-width: 100%;
     min-height: 100%;
@@ -111,6 +184,10 @@
     width: 50%;
 }
 
+#form-container form h2 {
+    text-align: center;
+}
+
 #form-container form label {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -124,7 +201,7 @@
     cursor: pointer;
 }
 
-#form-container form button {
+#form-container form .send-btn {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -137,7 +214,7 @@
     border-radius: 5px;
 }
 
-#form-container form button:hover {
+#form-container form .send-btn:hover {
     background-color:rgb(114, 107, 209);
 }
 
@@ -155,7 +232,23 @@ footer {
     background-color: rgb(71, 95, 151);
     grid-row: 3/4 ;
     grid-column: 1/3;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer a {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
+
+footer a span {
+    margin-left: 5px;
+}
+
+footer img {
+    width: 20px;
 }
 
 .active, .project-btn:hover {
@@ -171,6 +264,27 @@ footer {
     margin: 0 auto;
     display: flex;
     padding: 10px;
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #02c423;
+    padding: 15px;
+    border: 4px solid  #02c423 !important;
+    border-radius: 6px;
+    transition: all 0.4s ease 0s;
+    font-weight: 900;
+}
+
+#add-project:hover {
+    color: #494949 !important;
+    border-radius: 50px;
+    border-color: #494949 !important;
+    transition: all 0.3s ease 0s;
+}
+
+#add-project:active,
+#add-project:focus{
+    outline:none;
 }
 
 .project {
@@ -183,33 +297,96 @@ footer {
 }
 
 .project .add-todo-btn {
-    background-color: rgb(212, 203, 117);
-    outline: none;
-    border: 1px solid rgb(133, 126, 66);
     grid-column: 4/5;
     grid-row: 1/3;
+    background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+    background-color:#7892c2;
+    border-radius:10px;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:18px;
+    text-decoration:none;
+    border:none;
+}
+
+.project .add-todo-btn:hover {
+    background:linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
+    background-color:#476e9e;
+}
+
+.project .add-todo-btn:active,
+.project .add-todo-btn:focus {
+    outline: none;
 }
 
 .project .change-project-name {
     grid-column: 2/4;
     grid-row:2/3;
+    
+    font-weight: bold;
+    border: none;
+    background: #404040;
+    color: #ffffff !important;
+    padding: 5px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    transition: all 0.3s ease 0s;
+}
+
+.project .change-project-name:hover {
+    cursor: pointer;
+    background: #2b2b2b;
+    letter-spacing: 3px;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    transition: all 0.3s ease 0s;
 }
 
 .project .delete-project{
     grid-column: 1/2;
     grid-row:2/3;
-    background-color: red;
-    outline: none;
-    border: 1px solid;
+    color: #fff !important;
+    text-transform: uppercase;
+    text-decoration: none;
+    background: #ed3330;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    transition: all 0.4s ease 0s;
+    font-weight: bold;
+}
+
+.project .delete-project:hover {
+    background:#a10000;
+    -webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    -moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+    box-shadow: 5px 40px -10px rgba(0,0,0,0.57);
 }
 
 .project-btn {
+    word-break: break-all;
     outline: none;
     padding: 10px 16px;
     background: #7ffb73;
     cursor: pointer;
     border:1px solid rgb(38, 112, 44);
     grid-column: 1/4;
+    font-size: 20px;
+}
+
+#close-btn {
+    position: static;
+    grid-row: 4/5;
+    border:none;
+    margin-top: 5px;
+}
+
+#delete-btn {
+    position: static;
+    background-color: red;
+    border:none; 
+    grid-row: 3/4;
 }
 
 .low-priority {
@@ -227,5 +404,12 @@ footer {
 @media only screen and (min-width: 1920px) {
     #container{
         max-width: 1280px;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    #form-container {
+        width: 90%;
+        left: 2.5%;
     }
 }
