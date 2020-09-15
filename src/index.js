@@ -1,25 +1,16 @@
-export { projects, addProject };
-import { renderProjects } from './DOMstuff.js'
-import { populateStorage, getStorage } from './storage.js'
+export { projects, addProject, deleteProject, changeProjectName, createTodo ,deleteTodo, editTodo, switchActiveProject };
+import { renderProjects, renderTodoList } from './UI/projects.js'
+import { deleteForm } from "./UI/forms.js";
+import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage.js'
 
 let projects = {
     totalProjects: [],
-
-    makeDefaultProject: function () {
-        let defaultProject = new Project('Default project', true);
-        projects.totalProjects.push(defaultProject);
-        defaultProject.createDefaultTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
-    },
     
     deleteProject: function(project) {
         projects.totalProjects.splice(projects.totalProjects.indexOf(project),1)
     },
 
-    addProject: function(name, active) {
-        if (name.length < 4 || name.length > 20){
-            alert ('The title of the project need to have between 4 and 20 characters');
-            throw 'Invalid title';
-        }
+    createProject: function(name, active) {
         let project = new Project(name, active);
         projects.totalProjects.push(project);
         return project;
@@ -33,26 +24,7 @@ class Project {
         this.todosArray = [];
     }
 
-    changeTitle(name) {
-        if (name.length < 4 || name.length > 20){
-            alert ('The title of the project need to have between 4 and 20 characters');
-            throw 'Invalid title';
-        }else{
-            this.title = name;
-        }
-    }
-
-    createDefaultTodo(title, description, dueDate, priority) {
-        let todo = new Todo(title, description, dueDate, priority);
-        this.todosArray.push(todo);
-    }
-
-    createTodo() {
-        let title = document.querySelector('#title-todo').value;
-        let description = document.querySelector('#description-todo').value;
-        let dueDate = document.querySelector('#date-todo').value;
-        let priority = document.querySelector('#priority-todo').value;
-
+    createTodo(title, description, dueDate, priority) {
         let todo = new Todo(title, description, dueDate, priority);
         this.todosArray.push(todo);
     }
@@ -60,79 +32,90 @@ class Project {
     deleteTodo(index) {
         this.todosArray.splice(index,1);
     }
-
 }
 
 class Todo {
     constructor(title, description, dueDate, priority){
-            if ( title.length >= 4 ){
-                this.title = title;
-            } else{
-                alert ('Title too short');
-                throw 'Title too short';
-            }
-
+        this.title = title;
         this.description = description;
-        
-        if ( dueDate.length >= 4 ){
-            this.dueDate = dueDate;
-        } else{
-            alert ('Please enter a date');
-            throw 'No date';
-        }
-
-        this.priority = priority;
-    }
-
-    changeTitle(title) {
-        if ( title.length >= 4 ){
-            this.title = title;
-        } else{
-            alert('Title too short');
-            throw 'Title too short';
-        }
-    }
-
-    changeDescription(description) {
-        this.description = description;
-    }
-    
-    changeDueDate(date) {
-        if ( date.length >= 4 ){
-            this.dueDate = date;
-        } else{
-            alert ('Please enter a date');
-            throw 'No date';
-        }
-    }
-
-    changePriority(priority) {
+        this.dueDate = dueDate;
         this.priority = priority;
     }
 }
 
 function addProject(title) {
     projects.totalProjects.forEach(project =>{ project.active = false });
-    projects.addProject(title, true);
+    projects.createProject(title, true);
     renderProjects();
     populateStorage(projects.totalProjects);
 }
 
-function pushStorageToProjects(storageProjects) {
-    if(storageProjects){
-        storageProjects.forEach(storageProject => {
-            let project = projects.addProject(storageProject.title, storageProject.active);
-            
-            storageProject.todosArray.forEach( todo => {
-                project.createDefaultTodo(todo.title, todo.description, todo.dueDate, todo.priority);
-            });
-        });
+function deleteProject(project) {
+    projects.deleteProject(project);
+    populateStorage(projects.totalProjects);
+    renderProjects();
+    if (project.active === true ) {
+        project = undefined;
+        renderTodoList(project)
     }
+}
+
+function changeProjectName(project) {
+    let title = document.querySelector('#project-title').value
+    project.title = title;
+    populateStorage(projects.totalProjects);
+    renderProjects();
+    deleteForm();
+}
+
+function switchActiveProject(project) {
+    projects.totalProjects.forEach( item => { item.active = false });
+    project.active = true;
+    populateStorage(projects.totalProjects);
+    renderProjects();
+}
+
+function deleteTodo(project, todo) {
+    project.deleteTodo(project.todosArray.indexOf(todo));
+    populateStorage(projects.totalProjects);
+    renderTodoList(project);
+}
+
+function createTodo(project) {
+    let title = document.querySelector('#title-todo').value;
+    let description = document.querySelector('#description-todo').value;
+    let dueDate = document.querySelector('#date-todo').value;
+    let priority = document.querySelector('#priority-todo').value;
+    project.createTodo(title, description, dueDate, priority);
+    populateStorage(projects.totalProjects);
+    renderTodoList(project);
+    deleteForm(); 
+}
+
+function editTodo(project, todo) {
+    let title = document.querySelector('#title-todo').value;
+    let description = document.querySelector('#description-todo').value;
+    let dueDate = document.querySelector('#date-todo').value;
+    let priority = document.querySelector('#priority-todo').value;
+    todo.title = title;
+    todo.description = description;
+    todo.dueDate = dueDate;
+    todo.priority = priority;
+
+    populateStorage(projects.totalProjects);
+    renderTodoList(project);
+    deleteForm();
+}
+
+function defaultProject () {
+    let defaultProject = new Project('Default project', true);
+    projects.totalProjects.push(defaultProject);
+    defaultProject.createTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
 }
 
 function initialize() {
     let storage = getStorage();
-    if(!storage) { projects.makeDefaultProject(), populateStorage(projects.totalProjects) }
+    if(!storage) { defaultProject(), populateStorage(projects.totalProjects) }
     pushStorageToProjects(storage);
     renderProjects();
 }
