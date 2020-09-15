@@ -1,5 +1,5 @@
 import { projects,  switchActiveProject } from '../index.js';
-import { renderForm, renderProjectForm, renderDeletePopup} from './forms.js'
+import { renderTodoForm, renderProjectForm, renderDeletePopup} from './forms.js'
 export {renderProjects, renderTodoList}
 
 function renderProjects() {
@@ -30,7 +30,7 @@ function renderProject (project, $projectContainer) {
         $addTodoBtn.innerText = 'Add new todo';
         $addTodoBtn.classList.add('button');
         $addTodoBtn.classList.add('add-todo-btn');
-        $addTodoBtn.addEventListener('click', () => { renderForm(project) });
+        $addTodoBtn.addEventListener('click', () => { renderTodoForm(project) });
         $project.appendChild($addTodoBtn);
     }
     let $todoListContainer = document.createElement('div');
@@ -83,7 +83,7 @@ function renderTodoList(project) {
         let $todoEditBtn = document.createElement('button');
         $todoEditBtn.innerText = 'Edit todo';
         $todoEditBtn.classList.add('edit-todo-btn');
-        $todoEditBtn.addEventListener('click', () => { renderForm(project, todo) });
+        $todoEditBtn.addEventListener('click', () => { renderTodoForm(project, todo) });
         $todoContainer.appendChild($todoTitle);
         $todoContainer.appendChild($todoDescription);
         $todoContainer.appendChild($todoDate);

@@ -60,8 +60,7 @@ function deleteProject(project) {
     }
 }
 
-function changeProjectName(project) {
-    let title = document.querySelector('#project-title').value
+function changeProjectName(project, title) {
     project.title = title;
     populateStorage(projects.totalProjects);
     renderProjects();

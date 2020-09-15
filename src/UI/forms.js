@@ -1,7 +1,7 @@
-export { deleteForm, renderForm, renderProjectForm, renderDeletePopup }
+export { deleteForm, renderTodoForm, renderProjectForm, renderDeletePopup }
 import { addProject, changeProjectName, createTodo , editTodo, deleteProject, deleteTodo } from '../index.js';
 
-function renderForm (project, todo) {
+function renderTodoForm (project, todo) {
     let $formContainer = document.querySelector('#form-container');
     $formContainer.innerHTML = '';
     $formContainer.classList.remove('hidden');
@@ -124,7 +124,8 @@ function renderProjectForm(project) {
 
     if(project) {
         $inputTitle.value = project.title;
-        $sendBtn.onclick = () => { changeProjectName(project) };
+        let title = document.querySelector('#project-title').value;
+        $sendBtn.onclick = () => { changeProjectName(project, title) };
     }
 
     $formContainer.appendChild($form);
