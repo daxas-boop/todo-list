@@ -19,7 +19,12 @@ let projects = {
 
 class Project {
     constructor(title, active){
-        this.title = title;
+        if( title.length < 4 || title.length > 20) {
+            alert('Invalid title. Title must have between 4 and 20 characters');
+            throw 'Invalid title'
+        } else {
+            this.title = title;
+        }
         this.active = active;
         this.todosArray = [];
     }
@@ -36,9 +41,22 @@ class Project {
 
 class Todo {
     constructor(title, description, dueDate, priority){
-        this.title = title;
+        if( title.length < 4 || title.length > 20) {
+            alert('Invalid title. Title must have between 4 and 20 characters');
+            throw 'Invalid title'
+        } else {
+            this.title = title;
+        }
+
         this.description = description;
-        this.dueDate = dueDate;
+
+        if( dueDate < 4 ) {
+            alert('Invalid due date. You need to select a due date');
+            throw 'Invalid due date'
+        } else {
+            this.dueDate = dueDate;
+        }
+        
         this.priority = priority;
     }
 }
@@ -60,11 +78,17 @@ function deleteProject(project) {
     }
 }
 
-function changeProjectName(project, title) {
-    project.title = title;
-    populateStorage(projects.totalProjects);
-    renderProjects();
-    deleteForm();
+function changeProjectName(project) {
+    let title = document.querySelector('#project-title').value;
+    if( title.length < 4 || title.length > 20) {
+        alert('Invalid title. Title must have between 4 and 20 characters');
+        throw 'Invalid title'
+    } else {
+        project.title = title;
+        populateStorage(projects.totalProjects);
+        renderProjects();
+        deleteForm();
+    }
 }
 
 function switchActiveProject(project) {
@@ -96,9 +120,22 @@ function editTodo(project, todo) {
     let description = document.querySelector('#description-todo').value;
     let dueDate = document.querySelector('#date-todo').value;
     let priority = document.querySelector('#priority-todo').value;
-    todo.title = title;
+
+    if( title.length < 4 || title.length > 20) {
+        alert('Invalid title. Title must have between 4 and 20 characters');
+        throw 'Invalid title'
+    } else {
+        todo.title = title;
+    }
+
+    if( dueDate < 4 ) {
+        alert('Invalid due date. You need to select a due date');
+        throw 'Invalid due date'
+    } else {
+        todo.dueDate = dueDate;
+    }
+
     todo.description = description;
-    todo.dueDate = dueDate;
     todo.priority = priority;
 
     populateStorage(projects.totalProjects);

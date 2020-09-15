@@ -124,8 +124,7 @@ function renderProjectForm(project) {
 
     if(project) {
         $inputTitle.value = project.title;
-        let title = document.querySelector('#project-title').value;
-        $sendBtn.onclick = () => { changeProjectName(project, title) };
+        $sendBtn.onclick = () => { changeProjectName(project) };
     }
 
     $formContainer.appendChild($form);
