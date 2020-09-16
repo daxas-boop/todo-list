@@ -1,6 +1,7 @@
-import { addProject, changeProjectName, deleteProject } from '../index.js';
-import { renderProjects, renderTodoList } from './projects.js';
-import { deleteTodo, createTodo, editTodo } from '../Todo.js';
+/* eslint-disable import/no-cycle */
+import { addProject, changeProjectName, deleteProject } from '../index';
+import { renderProjects, renderTodoList } from './render-projects';
+import { deleteTodo, createTodo, editTodo } from '../Todo';
 
 export function deleteForm() {
   const $formContainer = document.querySelector('#form-container');
@@ -16,12 +17,15 @@ function renderWall() {
   $wall.addEventListener('click', () => { deleteForm(); });
 }
 
-export function renderTodoForm(project, todo) {
+export function renderTodoForm(project) {
   const $formContainer = document.querySelector('#form-container');
   $formContainer.innerHTML = '';
   $formContainer.classList.remove('hidden');
   const $form = document.createElement('form');
-  $form.setAttribute('onsubmit', 'return false');
+  $form.setAttribute('id', 'form-todo');
+  $form.onsubmit = () => {
+    createTodo(project); renderProjects(); deleteForm();
+  };
 
   const $labelTitle = document.createElement('label');
   const $labelTitleText = document.createElement('span');
@@ -30,6 +34,8 @@ export function renderTodoForm(project, todo) {
   $labelTitle.appendChild($labelTitleText);
   $inputTitle.setAttribute('type', 'text');
   $inputTitle.setAttribute('id', 'title-todo');
+  $inputTitle.maxLength = 25;
+  $inputTitle.required = true;
   $labelTitle.appendChild($inputTitle);
   $form.appendChild($labelTitle);
 
@@ -39,6 +45,7 @@ export function renderTodoForm(project, todo) {
   $labelDescriptionText.innerText = 'Description:';
   const $inputDescription = document.createElement('textarea');
   $inputDescription.setAttribute('id', 'description-todo');
+  $inputDescription.maxLength = 100;
   $labelDescription.appendChild($labelDescriptionText);
   $labelDescription.appendChild($inputDescription);
   $form.appendChild($labelDescription);
@@ -49,6 +56,7 @@ export function renderTodoForm(project, todo) {
   const $inputDate = document.createElement('input');
   $inputDate.setAttribute('type', 'date');
   $inputDate.setAttribute('id', 'date-todo');
+  $inputDate.required = true;
   $inputDate.setAttribute('min', new Date().toISOString().split('T')[0]);
   $labelDate.appendChild($labelDateText);
   $labelDate.appendChild($inputDate);
@@ -78,37 +86,37 @@ export function renderTodoForm(project, todo) {
   $closeBtn.classList.add('close-form-btn');
   $closeBtn.addEventListener('click', () => { deleteForm(); });
   $form.appendChild($closeBtn);
-
-  if (todo) {
-    $inputTitle.value = todo.title;
-    $inputDescription.value = todo.description;
-    $inputDate.value = todo.dueDate;
-    $inputPriority.value = todo.priority;
-    const $sendBtn = document.createElement('button');
-    $sendBtn.innerText = 'Send';
-    $sendBtn.onclick = () => { editTodo(project, todo); renderProjects(); deleteForm(); };
-    $sendBtn.classList.add('button');
-    $sendBtn.classList.add('send-btn');
-    $form.appendChild($sendBtn);
-  } else {
-    const $sendBtn = document.createElement('button');
-    $sendBtn.innerText = 'Send';
-    $sendBtn.onclick = () => { createTodo(project); renderProjects(); deleteForm(); };
-    $sendBtn.classList.add('button');
-    $sendBtn.classList.add('send-btn');
-    $form.appendChild($sendBtn);
-  }
+  const $sendBtn = document.createElement('button');
+  $sendBtn.innerText = 'Send';
+  $sendBtn.classList.add('button');
+  $sendBtn.classList.add('send-btn');
+  $form.appendChild($sendBtn);
 
   $formContainer.appendChild($form);
   renderWall();
 }
 
-export function renderProjectForm(project) {
+export function renderEditTodoForm(todo) {
+  renderTodoForm();
+  const $inputTitle = document.querySelector('#title-todo');
+  const $inputDescription = document.querySelector('#description-todo');
+  const $inputDate = document.querySelector('#date-todo');
+  const $inputPriority = document.querySelector('#priority-todo');
+  const $form = document.querySelector('#form-todo');
+
+  $inputTitle.value = todo.title;
+  $inputDescription.value = todo.description;
+  $inputDate.value = todo.dueDate;
+  $inputPriority.value = todo.priority;
+  $form.onsubmit = () => { editTodo(todo); renderProjects(); deleteForm(); };
+}
+
+export function renderProjectForm() {
   const $formContainer = document.querySelector('#form-container');
   $formContainer.innerHTML = '';
   $formContainer.classList.remove('hidden');
   const $form = document.createElement('form');
-  $form.setAttribute('onsubmit', 'return false');
+  $form.setAttribute('id', 'form-project');
 
   const $title = document.createElement('h2');
   $title.innerText = 'Add a new Project';
@@ -120,6 +128,8 @@ export function renderProjectForm(project) {
   const $inputTitle = document.createElement('input');
   $labelTitle.appendChild($labelTitleText);
   $inputTitle.setAttribute('type', 'text');
+  $inputTitle.maxLength = 25;
+  $inputTitle.required = true;
   $inputTitle.setAttribute('id', 'project-title');
   $labelTitle.appendChild($inputTitle);
   $form.appendChild($labelTitle);
@@ -132,18 +142,23 @@ export function renderProjectForm(project) {
 
   const $sendBtn = document.createElement('button');
   $sendBtn.innerText = 'Send';
-  $sendBtn.onclick = () => { addProject($inputTitle.value); renderProjects(); deleteForm(); };
   $sendBtn.classList.add('button');
   $sendBtn.classList.add('send-btn');
   $form.appendChild($sendBtn);
-
-  if (project) {
-    $inputTitle.value = project.title;
-    $sendBtn.onclick = () => { changeProjectName(project); renderProjects(); deleteForm(); };
-  }
+  $form.onsubmit = () => { addProject($inputTitle.value); renderProjects(); deleteForm(); };
 
   $formContainer.appendChild($form);
   renderWall();
+}
+
+export function renderEditProjectNameForm(project) {
+  renderProjectForm();
+  const $formTitle = document.querySelector('#form-project h2');
+  $formTitle.innerText = 'Edit the name of the Project';
+  const $inputTitle = document.querySelector('#project-title');
+  const $form = document.querySelector('#form-project');
+  $inputTitle.value = project.title;
+  $form.onsubmit = () => { changeProjectName(project); renderProjects(); deleteForm(); };
 }
 
 export function renderDeletePopup(project, todo) {

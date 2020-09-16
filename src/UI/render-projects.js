@@ -1,5 +1,9 @@
-import { projects, switchActiveProject } from '../index.js';
-import { renderTodoForm, renderProjectForm, renderDeletePopup } from './forms.js';
+/* eslint-disable import/no-cycle */
+import { projects, switchActiveProject } from '../index';
+import {
+  renderTodoForm, renderProjectForm, renderDeletePopup, renderEditTodoForm,
+  renderEditProjectNameForm,
+} from './render-forms';
 
 function addActiveClass(e) {
   const $btns = document.querySelectorAll('.project .project-btn');
@@ -52,7 +56,7 @@ export function renderTodoList(project) {
     const $todoEditBtn = document.createElement('button');
     $todoEditBtn.innerText = 'Edit todo';
     $todoEditBtn.classList.add('edit-todo-btn');
-    $todoEditBtn.addEventListener('click', () => { renderTodoForm(project, todo); });
+    $todoEditBtn.addEventListener('click', () => { renderEditTodoForm(todo); });
     $todoContainer.appendChild($todoTitle);
     $todoContainer.appendChild($todoDescription);
     $todoContainer.appendChild($todoDate);
@@ -85,7 +89,7 @@ function renderProject(project, $projectContainer) {
   $changeProjectNameBtn.setAttribute('class', 'change-project-name');
   $changeProjectNameBtn.classList.add('button');
   $changeProjectNameBtn.innerText = 'Change project name';
-  $changeProjectNameBtn.addEventListener('click', () => { renderProjectForm(project); });
+  $changeProjectNameBtn.addEventListener('click', () => { renderEditProjectNameForm(project); });
   const $deleteProjectBtn = document.createElement('button');
   $deleteProjectBtn.setAttribute('class', 'delete-project');
   $deleteProjectBtn.innerText = 'Delete project';
