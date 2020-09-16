@@ -1,159 +1,87 @@
-export { projects, addProject, deleteProject, changeProjectName, createTodo ,deleteTodo, editTodo, switchActiveProject };
-import { renderProjects, renderTodoList } from './UI/projects.js'
-import { deleteForm } from "./UI/forms.js";
-import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage.js'
-
-let projects = {
-    totalProjects: [],
-    
-    deleteProject: function(project) {
-        projects.totalProjects.splice(projects.totalProjects.indexOf(project),1)
-    },
-
-    createProject: function(name, active) {
-        let project = new Project(name, active);
-        projects.totalProjects.push(project);
-        return project;
-    }
-};
+/* eslint-disable no-alert */
+/* eslint-disable no-param-reassign */
+import { renderProjects } from './UI/projects.js';
+import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage.js';
+import { Todo } from './Todo.js';
 
 class Project {
-    constructor(title, active){
-        if( title.length < 4 || title.length > 20) {
-            alert('Invalid title. Title must have between 4 and 20 characters');
-            throw 'Invalid title'
-        } else {
-            this.title = title;
-        }
-        this.active = active;
-        this.todosArray = [];
-    }
-
-    createTodo(title, description, dueDate, priority) {
-        let todo = new Todo(title, description, dueDate, priority);
-        this.todosArray.push(todo);
-    }
-
-    deleteTodo(index) {
-        this.todosArray.splice(index,1);
-    }
-}
-
-class Todo {
-    constructor(title, description, dueDate, priority){
-        if( title.length < 4 || title.length > 20) {
-            alert('Invalid title. Title must have between 4 and 20 characters');
-            throw 'Invalid title'
-        } else {
-            this.title = title;
-        }
-
-        this.description = description;
-
-        if( dueDate < 4 ) {
-            alert('Invalid due date. You need to select a due date');
-            throw 'Invalid due date'
-        } else {
-            this.dueDate = dueDate;
-        }
-        
-        this.priority = priority;
-    }
-}
-
-function addProject(title) {
-    projects.totalProjects.forEach(project =>{ project.active = false });
-    projects.createProject(title, true);
-    renderProjects();
-    populateStorage(projects.totalProjects);
-}
-
-function deleteProject(project) {
-    projects.deleteProject(project);
-    populateStorage(projects.totalProjects);
-    renderProjects();
-    if (project.active === true ) {
-        project = undefined;
-        renderTodoList(project)
-    }
-}
-
-function changeProjectName(project) {
-    let title = document.querySelector('#project-title').value;
-    if( title.length < 4 || title.length > 20) {
-        alert('Invalid title. Title must have between 4 and 20 characters');
-        throw 'Invalid title'
+  constructor(title, active) {
+    if (title.length < 4 || title.length > 20) {
+      alert('Invalid title. Title must have between 4 and 20 characters');
+      throw new Error('Invalid title');
     } else {
-        project.title = title;
-        populateStorage(projects.totalProjects);
-        renderProjects();
-        deleteForm();
+      this.title = title;
     }
+    this.active = active;
+    this.todosArray = [];
+  }
+
+  createTodo(title, description, dueDate, priority) {
+    const todo = new Todo(title, description, dueDate, priority);
+    this.todosArray.push(todo);
+  }
+
+  deleteTodo(index) {
+    this.todosArray.splice(index, 1);
+  }
 }
 
-function switchActiveProject(project) {
-    projects.totalProjects.forEach( item => { item.active = false });
-    project.active = true;
+export const projects = {
+  totalProjects: [],
+
+  deleteProject(project) {
+    projects.totalProjects.splice(projects.totalProjects.indexOf(project), 1);
+  },
+
+  createProject(name, active) {
+    const project = new Project(name, active);
+    projects.totalProjects.push(project);
+    return project;
+  },
+};
+
+export function addProject(title) {
+  projects.totalProjects.forEach((project) => { project.active = false; });
+  projects.createProject(title, true);
+  populateStorage(projects.totalProjects);
+}
+
+export function deleteProject(project) {
+  projects.deleteProject(project);
+  populateStorage(projects.totalProjects);
+  if (project.active === true) {
+    project = undefined;
+  }
+}
+
+export function changeProjectName(project) {
+  const title = document.querySelector('#project-title').value;
+  if (title.length < 4 || title.length > 20) {
+    alert('Invalid title. Title must have between 4 and 20 characters');
+    throw new Error('Invalid title');
+  } else {
+    project.title = title;
     populateStorage(projects.totalProjects);
-    renderProjects();
+  }
 }
 
-function deleteTodo(project, todo) {
-    project.deleteTodo(project.todosArray.indexOf(todo));
-    populateStorage(projects.totalProjects);
-    renderTodoList(project);
+export function switchActiveProject(project) {
+  projects.totalProjects.forEach((item) => { item.active = false; });
+  project.active = true;
+  populateStorage(projects.totalProjects);
 }
 
-function createTodo(project) {
-    let title = document.querySelector('#title-todo').value;
-    let description = document.querySelector('#description-todo').value;
-    let dueDate = document.querySelector('#date-todo').value;
-    let priority = document.querySelector('#priority-todo').value;
-    project.createTodo(title, description, dueDate, priority);
-    populateStorage(projects.totalProjects);
-    renderTodoList(project);
-    deleteForm(); 
-}
-
-function editTodo(project, todo) {
-    let title = document.querySelector('#title-todo').value;
-    let description = document.querySelector('#description-todo').value;
-    let dueDate = document.querySelector('#date-todo').value;
-    let priority = document.querySelector('#priority-todo').value;
-
-    if( title.length < 4 || title.length > 20) {
-        alert('Invalid title. Title must have between 4 and 20 characters');
-        throw 'Invalid title'
-    } else {
-        todo.title = title;
-    }
-
-    if( dueDate < 4 ) {
-        alert('Invalid due date. You need to select a due date');
-        throw 'Invalid due date'
-    } else {
-        todo.dueDate = dueDate;
-    }
-
-    todo.description = description;
-    todo.priority = priority;
-
-    populateStorage(projects.totalProjects);
-    renderTodoList(project);
-    deleteForm();
-}
-
-function defaultProject () {
-    let defaultProject = new Project('Default project', true);
-    projects.totalProjects.push(defaultProject);
-    defaultProject.createTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
+function defaultProject() {
+  const projectDefault = new Project('Default project', true);
+  projects.totalProjects.push(projectDefault);
+  projectDefault.createTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
 }
 
 function initialize() {
-    let storage = getStorage();
-    if(!storage) { defaultProject(), populateStorage(projects.totalProjects) }
-    pushStorageToProjects(storage);
-    renderProjects();
+  const storage = getStorage();
+  if (!storage) { defaultProject(); populateStorage(projects.totalProjects); }
+  pushStorageToProjects(storage, projects);
+  renderProjects();
 }
 
 initialize();
