@@ -1,17 +1,11 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-param-reassign */
-import { renderProjects } from './UI/projects.js';
-import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage.js';
-import { Todo } from './Todo.js';
+/* eslint-disable import/no-cycle */
+import { renderProjects } from './UI/render-projects';
+import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage';
+import { Todo } from './Todo';
 
 class Project {
   constructor(title, active) {
-    if (title.length < 4 || title.length > 20) {
-      alert('Invalid title. Title must have between 4 and 20 characters');
-      throw new Error('Invalid title');
-    } else {
-      this.title = title;
-    }
+    this.title = title;
     this.active = active;
     this.todosArray = [];
   }
@@ -56,13 +50,8 @@ export function deleteProject(project) {
 
 export function changeProjectName(project) {
   const title = document.querySelector('#project-title').value;
-  if (title.length < 4 || title.length > 20) {
-    alert('Invalid title. Title must have between 4 and 20 characters');
-    throw new Error('Invalid title');
-  } else {
-    project.title = title;
-    populateStorage(projects.totalProjects);
-  }
+  project.title = title;
+  populateStorage(projects.totalProjects);
 }
 
 export function switchActiveProject(project) {
