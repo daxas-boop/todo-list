@@ -1,7 +1,4 @@
-/* eslint-disable import/no-cycle */
-import { populateStorage } from './Storage/storage';
-import { projects } from './index';
-
+/* eslint-disable no-param-reassign */
 export class Todo {
   constructor(title, description, dueDate, priority) {
     this.title = title;
@@ -13,7 +10,6 @@ export class Todo {
 
 export function deleteTodo(project, todo) {
   project.deleteTodo(project.todosArray.indexOf(todo));
-  populateStorage(projects.totalProjects);
 }
 
 export function createTodo(project) {
@@ -21,8 +17,7 @@ export function createTodo(project) {
   const description = document.querySelector('#description-todo').value;
   const dueDate = document.querySelector('#date-todo').value;
   const priority = document.querySelector('#priority-todo').value;
-  project.createTodo(title, description, dueDate, priority);
-  populateStorage(projects.totalProjects);
+  project.createTodo(title, description, dueDate, priority, Todo);
 }
 
 export function editTodo(todo) {
@@ -35,5 +30,4 @@ export function editTodo(todo) {
   todo.dueDate = dueDate;
   todo.description = description;
   todo.priority = priority;
-  populateStorage(projects.totalProjects);
 }
