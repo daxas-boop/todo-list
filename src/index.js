@@ -1,76 +1,187 @@
-/* eslint-disable import/no-cycle */
-import { renderProjects } from './UI/render-projects';
-import { populateStorage, getStorage, pushStorageToProjects } from './Storage/storage';
-import { Todo } from './Todo';
+/* eslint-disable no-use-before-define */
+import { renderProjects, addActiveClass, renderTodoList } from './ui/render-projects';
+import { getStorage, populateStorage } from './cache/storage';
+import { createTodo, Todo, deleteTodo, editTodo } from './classes/todo';
+import {
+  renderProjectForm,
+  deleteForm,
+  renderDeleteProjectPopup,
+  renderEditProjectNameForm,
+  renderTodoForm,
+  renderDeleteTodoPopup,
+  renderEditTodoForm,
+} from './ui/render-forms';
+import {
+  Project,
+  totalProjects,
+  createProject,
+  switchActiveProject,
+  deleteProject,
+  changeProjectName,
+} from './classes/project';
 
-class Project {
-  constructor(title, active) {
-    this.title = title;
-    this.active = active;
-    this.todosArray = [];
-  }
-
-  createTodo(title, description, dueDate, priority) {
-    const todo = new Todo(title, description, dueDate, priority);
-    this.todosArray.push(todo);
-  }
-
-  deleteTodo(index) {
-    this.todosArray.splice(index, 1);
-  }
-}
-
-export const projects = {
-  totalProjects: [],
-
-  deleteProject(project) {
-    projects.totalProjects.splice(projects.totalProjects.indexOf(project), 1);
-  },
-
-  createProject(name, active) {
-    const project = new Project(name, active);
-    projects.totalProjects.push(project);
-    return project;
-  },
-};
-
-export function addProject(title) {
-  projects.totalProjects.forEach((project) => { project.active = false; });
-  projects.createProject(title, true);
-  populateStorage(projects.totalProjects);
-}
-
-export function deleteProject(project) {
-  projects.deleteProject(project);
-  populateStorage(projects.totalProjects);
-  if (project.active === true) {
-    project = undefined;
+function pushStorageToProjects(storageProjects) {
+  if (storageProjects) {
+    storageProjects.forEach((storageProject) => {
+      const project = createProject(storageProject.title, storageProject.active);
+      storageProject.todosArray.forEach((todo) => {
+        project.createTodo(todo.title, todo.description, todo.dueDate, todo.priority, Todo);
+      });
+    });
   }
 }
 
-export function changeProjectName(project) {
-  const title = document.querySelector('#project-title').value;
-  project.title = title;
-  populateStorage(projects.totalProjects);
+function handleButtons() {
+  const $projectBtns = document.querySelectorAll('.project .project-btn');
+  $projectBtns.forEach(($projectBtn) => {
+    $projectBtn.addEventListener('click', (e) => {
+      handleProjectSwitch(e);
+    });
+  });
+
+  const $addProjectBtn = document.querySelector('#add-project');
+  $addProjectBtn.addEventListener('click', () => {
+    handleAddProject();
+  });
+
+  const $deleteProjectBtns = document.querySelectorAll('.project .delete-project');
+  $deleteProjectBtns.forEach(($deleteProjectBtn) => {
+    $deleteProjectBtn.addEventListener('click', (e) => {
+      handleDeleteProject(e);
+    });
+  });
+
+  const $changeProjectNameBtns = document.querySelectorAll('.project .change-project-name');
+  $changeProjectNameBtns.forEach(($changeProjectNameBtn) => {
+    $changeProjectNameBtn.addEventListener('click', (e) => {
+      handleChangeProjectName(e);
+    });
+  });
+
+  const $addTodoBtn = document.querySelector('.project .add-todo-btn');
+  $addTodoBtn.addEventListener('click', (e) => {
+    handleAddTodo(e);
+  });
+
+  const $todoDeleteBtns = document.querySelectorAll('.todo-container .delete-todo-btn');
+  $todoDeleteBtns.forEach(($todoDeleteBtn) => {
+    $todoDeleteBtn.addEventListener('click', (e) => {
+      handleDeleteTodo(e);
+    });
+  });
+
+  const $editTodoBtns = document.querySelectorAll('.todo-container .edit-todo-btn');
+  $editTodoBtns.forEach(($editTodoBtn) => {
+    $editTodoBtn.addEventListener('click', (e) => {
+      handleEditTodo(e);
+    });
+  });
 }
 
-export function switchActiveProject(project) {
-  projects.totalProjects.forEach((item) => { item.active = false; });
-  project.active = true;
-  populateStorage(projects.totalProjects);
+function handleProjectSwitch(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  addActiveClass(e);
+  switchActiveProject(project);
+  populateStorage(totalProjects);
+  renderProjects(totalProjects, handleButtons);
+}
+
+function handleDeleteProject(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  const $deleteBtn = renderDeleteProjectPopup(project);
+  $deleteBtn.onclick = () => {
+    if (project.active) {
+      deleteProject(project);
+      deleteForm();
+      populateStorage(totalProjects);
+      renderTodoList();
+      renderProjects(totalProjects, handleButtons);
+    }
+    deleteProject(project);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
+}
+
+function handleAddProject() {
+  const $addProjectForm = renderProjectForm();
+  $addProjectForm.onsubmit = () => {
+    const title = document.querySelector('#project-title').value;
+    if (totalProjects.length === 0) {
+      createProject(title, true);
+      deleteForm();
+      populateStorage(totalProjects);
+      renderProjects(totalProjects, handleButtons);
+      return;
+    }
+    createProject(title);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
+}
+
+function handleChangeProjectName(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  const $changeProjectNameForm = renderEditProjectNameForm(project);
+  $changeProjectNameForm.onsubmit = () => {
+    changeProjectName(project);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
+}
+
+function handleAddTodo(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  const $addTodoForm = renderTodoForm(project);
+  $addTodoForm.onsubmit = () => {
+    createTodo(project);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
+}
+
+function handleDeleteTodo(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  const todo = project.todosArray[e.target.getAttribute('data-todo')];
+  const $deleteTodoBtn = renderDeleteTodoPopup(todo);
+  $deleteTodoBtn.onclick = () => {
+    deleteTodo(project, todo);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
+}
+
+function handleEditTodo(e) {
+  const project = totalProjects[e.target.getAttribute('data-project')];
+  const todo = project.todosArray[e.target.getAttribute('data-todo')];
+  const $editTodoForm = renderEditTodoForm(todo);
+  $editTodoForm.onsubmit = () => {
+    editTodo(todo);
+    deleteForm();
+    populateStorage(totalProjects);
+    renderProjects(totalProjects, handleButtons);
+  };
 }
 
 function defaultProject() {
   const projectDefault = new Project('Default project', true);
-  projects.totalProjects.push(projectDefault);
-  projectDefault.createTodo('Default todo', 'This is a default to do', '2020-03-09', 'low');
+  totalProjects.push(projectDefault);
+  projectDefault.createTodo('Default todo', 'This is a default to do', '2020-03-09', 'low', Todo);
 }
 
 function initialize() {
   const storage = getStorage();
-  if (!storage) { defaultProject(); populateStorage(projects.totalProjects); }
-  pushStorageToProjects(storage, projects);
-  renderProjects();
+  if (!storage) {
+    defaultProject();
+    populateStorage(totalProjects);
+  }
+  pushStorageToProjects(storage);
+  renderProjects(totalProjects, handleButtons);
 }
 
 initialize();
