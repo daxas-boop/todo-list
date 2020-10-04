@@ -7,7 +7,8 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "dev": "http-server ./dist"
   },
   "repository": {
     "type": "git",
